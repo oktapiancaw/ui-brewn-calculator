@@ -34,15 +34,12 @@ const formatTime = (seconds: number) => {
 export default function TetsuKasuyaMethod() {
   const [coffeeGrams, setCoffeeGrams] = useState<number>(14);
 
-  // Derived values
-  const totalWater = useMemo(() => coffeeGrams * 15, [coffeeGrams]); // 1:15 ratio
+  const totalWater = useMemo(() => coffeeGrams * 15, [coffeeGrams]);
   const latterPours = 4;
 
   const eachLatterVol = totalWater / latterPours;
-  // Build pour schedule
   const pourSchedule: PourStep[] = useMemo(() => {
     const schedule: PourStep[] = [];
-    // first pour at 0:00
     schedule.push({
       index: 1,
       time: 0,
@@ -59,7 +56,7 @@ export default function TetsuKasuyaMethod() {
         time: bodyTime,
         endTime: endTimeTemp,
         volume: eachLatterVol,
-        label: `~${ (i+1) * eachLatterVol}ml Total`,
+        label: `~${(i + 1) * eachLatterVol}ml Total`,
       });
       bodyTime = endTimeTemp;
     }
@@ -69,8 +66,10 @@ export default function TetsuKasuyaMethod() {
   return (
     <>
       <div className="mb-8">
-        <Button variant={'outline'} className="h-[44px] md:w-[44px] w-full">
-          <Link href={'/'}><ArrowLeft /></Link> 
+        <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Link href={"/"}>
+            <ArrowLeft />
+          </Link>
         </Button>
       </div>
       <header className="mb-12 flex flex-col justify-start items-center">

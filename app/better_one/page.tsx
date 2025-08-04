@@ -34,15 +34,12 @@ const formatTime = (seconds: number) => {
 export default function TetsuKasuyaMethod() {
   const [coffeeGrams, setCoffeeGrams] = useState<number>(14);
 
-  // Derived values
   const totalWater = useMemo(() => coffeeGrams * 16.67, [coffeeGrams]);
   const latterPours = 4;
 
   const eachLatterVol = totalWater / (latterPours + 1);
-  // Build pour schedule
   const pourSchedule: PourStep[] = useMemo(() => {
     const schedule: PourStep[] = [];
-    // first pour at 0:00
     schedule.push({
       index: Math.random().toString(36).substring(2, 10),
       time: 0,
@@ -66,7 +63,7 @@ export default function TetsuKasuyaMethod() {
         time: bodyTime,
         endTime: endTimeTemp,
         volume: eachLatterVol,
-        label: `~${ ((i+1) * eachLatterVol).toFixed(1)}ml Total`,
+        label: `~${((i + 1) * eachLatterVol).toFixed(1)}ml Total`,
       });
       schedule.push({
         index: Math.random().toString(36).substring(2, 10),
@@ -78,19 +75,19 @@ export default function TetsuKasuyaMethod() {
       bodyTime = endTimeTemp + 10;
     }
     schedule.push({
-        index: Math.random().toString(36).substring(2, 10),
-        time: bodyTime,
-        endTime: bodyTime + 10,
-        volume: eachLatterVol,
-        label: `~${ ((1 +latterPours) * eachLatterVol).toFixed(1)}ml Total`,
-      });
-    
+      index: Math.random().toString(36).substring(2, 10),
+      time: bodyTime,
+      endTime: bodyTime + 10,
+      volume: eachLatterVol,
+      label: `~${((1 + latterPours) * eachLatterVol).toFixed(1)}ml Total`,
+    });
+
     schedule.push({
-    index: Math.random().toString(36).substring(2, 10),
-    time: 120,
-    endTime: 180,
-    volume: 0,
-    label: `Gentle Swirl, Wait for Drawdown`,
+      index: Math.random().toString(36).substring(2, 10),
+      time: 120,
+      endTime: 180,
+      volume: 0,
+      label: `Gentle Swirl, Wait for Drawdown`,
     });
     return schedule;
   }, [latterPours, eachLatterVol]);
@@ -98,8 +95,10 @@ export default function TetsuKasuyaMethod() {
   return (
     <>
       <div className="mb-8">
-        <Button variant={'outline'} className="h-[44px] md:w-[44px] w-full">
-          <Link href={'/'}><ArrowLeft /></Link> 
+        <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Link href={"/"}>
+            <ArrowLeft />
+          </Link>
         </Button>
       </div>
       <header className="mb-12 flex flex-col justify-start items-center">
@@ -149,7 +148,9 @@ export default function TetsuKasuyaMethod() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="font-bold tracking-wider text-base ">1:16.67</p>
+                    <p className="font-bold tracking-wider text-base ">
+                      1:16.67
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -190,7 +191,9 @@ export default function TetsuKasuyaMethod() {
                 Pouring
               </span>
               <Droplets className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">{latterPours + 1} Pours</span>
+              <span className="font-medium text-base">
+                {latterPours + 1} Pours
+              </span>
             </div>
           </div>
         </section>
@@ -220,7 +223,7 @@ export default function TetsuKasuyaMethod() {
                   {formatTime(p.time)} - {formatTime(p.endTime)}
                 </span>
                 <span className="basis-1/4 text-center text-stone-700 dark:text-stone-200">
-                  {p.volume != 0 ? p.volume.toFixed(1) : ''}
+                  {p.volume != 0 ? p.volume.toFixed(1) : ""}
                 </span>
                 <span className="basis-1/3 text-center text-stone-700 dark:text-stone-200">
                   {p.label}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -17,7 +17,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { ArrowLeft, Droplets, GlassWater, Info, ThermometerSun, Timer } from "lucide-react";
+import {
+  ArrowLeft,
+  Droplets,
+  GlassWater,
+  Info,
+  ThermometerSun,
+  Timer,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 type RoastLevel = "light" | "medium" | "dark";
@@ -56,20 +63,15 @@ export default function TetsuKasuyaMethod() {
   const [tasteBalance, setTasteBalance] = useState<TasteBalance>("neutral");
   const [body, setBody] = useState<Body>("medium");
 
-  // Derived values
-  const totalWater = useMemo(() => coffeeGrams * 15, [coffeeGrams]); // 1:15 ratio
-  const firstHalfWater = useMemo(() => totalWater * 0.4, [totalWater]); // 40%
-  const secondHalfWater = useMemo(() => totalWater * 0.6, [totalWater]); // 60%
+  const totalWater = useMemo(() => coffeeGrams * 15, [coffeeGrams]);
+  const firstHalfWater = useMemo(() => totalWater * 0.4, [totalWater]);
+  const secondHalfWater = useMemo(() => totalWater * 0.6, [totalWater]);
   const latterPours = bodyPoursMap[body];
 
-  // Adjust first-half split for sweetness/acidity
-  // Base is 50/50 of first half (two pours: each 20% of total)
-  // sweetness: shift 10% of first half from first pour to second (i.e., first gets 0.4*total * (0.5 - 0.1)=0.4*total*0.4 etc.)
   const [firstPourRatio, secondPourRatio] = useMemo(() => {
-    const base = 0.5; // of first half
-    const delta = 0.1; // shift magnitude
+    const base = 0.5;
+    const delta = 0.1;
     if (tasteBalance === "sweetness") {
-      // less in first pour, more in second
       return [base - delta, base + delta];
     }
     if (tasteBalance === "acidity") {
@@ -78,10 +80,8 @@ export default function TetsuKasuyaMethod() {
     return [base, base];
   }, [tasteBalance]);
 
-  // Build pour schedule
   const pourSchedule: PourStep[] = useMemo(() => {
     const schedule: PourStep[] = [];
-    // first pour at 0:00
     const firstPourVol = firstHalfWater * firstPourRatio;
     schedule.push({
       index: 1,
@@ -90,7 +90,6 @@ export default function TetsuKasuyaMethod() {
       volume: firstPourVol,
       label: "1st (bloom)",
     });
-    // second pour after fixed 45s
     const secondPourVol = firstHalfWater * secondPourRatio;
     schedule.push({
       index: 2,
@@ -99,29 +98,9 @@ export default function TetsuKasuyaMethod() {
       volume: secondPourVol,
       label: "2nd (balance)",
     });
-
-    // // Latter half: we want total brew time ~165s (2:45)
-    // const targetTotal = 165; // seconds
-    // // Current time after second pour is 45s. We need to schedule `latterPours` pours between >45 and around targetTotal - small buffer (assume pours instantaneous)
-    // // We'll create descending intervals starting at 40s, decreasing by 5s but not below 25s, then scale to fit available window.
-    // const rawIntervals: number[] = [];
-    // const startInterval = 40;
-    // for (let i = 0; i < latterPours; i++) {
-    //   const interval = Math.max(25, startInterval - i * 5);
-    //   rawIntervals.push(interval);
-    // }
-    // // Sum of raw intervals
-    // const rawSum = rawIntervals.reduce((a, b) => a + b, 0);
-    // // Available time for latter half from after second pour to targetTotal
-    // const available = targetTotal - 45; // e.g., 165s
-    // // Scale factor to stretch/shrink intervals to fit
-    // const scale = available / rawSum;
-    // const scaledIntervals = rawIntervals.map((iv) => iv * scale);
-    // let cursor = 45;
-
     const targetTotal = 165;
     let bodyTime = 90;
-    const available = targetTotal - 45; // e.g., 120s
+    const available = targetTotal - 45;
     const scale = available / latterPours;
 
     const eachLatterVol = secondHalfWater / latterPours;
@@ -137,13 +116,21 @@ export default function TetsuKasuyaMethod() {
       bodyTime = endTimeTemp;
     }
     return schedule;
-  }, [firstHalfWater, secondHalfWater, firstPourRatio, secondPourRatio, latterPours]);
+  }, [
+    firstHalfWater,
+    secondHalfWater,
+    firstPourRatio,
+    secondPourRatio,
+    latterPours,
+  ]);
 
   return (
     <>
       <div className="mb-8">
-        <Button variant={'outline'} className="h-[44px] md:w-[44px] w-full">
-          <Link href={'/'}><ArrowLeft /></Link> 
+        <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Link href={"/"}>
+            <ArrowLeft />
+          </Link>
         </Button>
       </div>
       <header className="mb-12 flex flex-col justify-start items-center">
@@ -175,7 +162,7 @@ export default function TetsuKasuyaMethod() {
               >
                 Coffee (grams)
               </label>
-              
+
               <div className="flex justify-center items-center space-x-2">
                 <Input
                   id="coffeeGram"
