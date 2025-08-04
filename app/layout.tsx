@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Footer } from "./footer";
@@ -12,11 +12,6 @@ export const viewport: Viewport = {
 
 const geist = Geist({
   variable: "--font-geist",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -33,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-stone-950`}
+        className={`${geist.variable} bg-white tracking-tight antialiased dark:bg-stone-950`}
       >
         <ThemeProvider
           enableSystem={true}
