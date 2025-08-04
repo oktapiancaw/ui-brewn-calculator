@@ -1,103 +1,103 @@
-import Image from "next/image";
+"use client";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <header className="mb-12 flex flex-col justify-start items-center">
+        <div className="text-center">
+          <p className="font-bold text-2xl capitalize text-black dark:text-white">
+            Manual Brew Methods
+          </p>
+          <p className="text-stone-600 dark:text-stone-500">
+            <span>by Someone I respect</span>
+          </p>
         </div>
+      </header>
+
+      <main className="space-y-12 max-w-3xl mx-auto p-4 min-h-[60vh]">
+        
+        <section className="opacity: 1; filter: blur(0px); transform: none;">
+          <p className="mb-8">
+            Here are the brewing techniques that I know and have recreated as a calculator, so you can use them when you want to brew coffee.
+          </p>
+          <div className="flex flex-col space-y-4">
+            <Link
+              className="relative h-full w-full bg-white p-4 border dark:bg-stone-950 overflow-hidden rounded-2xl"
+              href={"/46"}
+            >
+              <div className="flex flex-col justify-left">
+                <div className="flex  justify-between items-center space-x-4 flex-col sm:flex-row">
+                  <h4 className="font-bold dark:text-stone-100 text-lg md:text-xl">
+                    4:6 Method
+                  </h4>
+                  <p className="space-x-2 text-center sm:text-left">
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #filter
+                    </span>
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #v60
+                    </span>
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #champ
+                    </span>
+                  </p>
+                </div>
+                <p className="text-stone-500 text-sm dark:text-stone-400 text-center sm:text-left">
+                  <span className="hidden sm:inline-block">by</span> Tetsu
+                  Kasuya
+                </p>
+              </div>
+            </Link>
+            <Link
+              className="relative h-full w-full bg-white p-4 border dark:bg-stone-950 overflow-hidden rounded-2xl"
+              href={"/better_one"}
+            >
+              <div className="flex flex-col justify-left">
+                <div className="flex  justify-between items-center space-x-4 flex-col sm:flex-row">
+                  <h4 className="font-bold dark:text-stone-100 text-lg md:text-xl">
+                    A Better One Cup
+                  </h4>
+                  <p className="space-x-2 text-center sm:text-left">
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #filter
+                    </span>
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #v60
+                    </span>
+                  </p>
+                </div>
+                <p className="text-stone-500 text-sm dark:text-stone-400 text-center sm:text-left">
+                  <span className="hidden sm:inline-block">by</span> James Hoffman
+                </p>
+              </div>
+            </Link>
+            <Link
+              className="relative h-full w-full bg-white p-4 border dark:bg-stone-950 overflow-hidden rounded-2xl"
+              href={"/simple"}
+            >
+              <div className="flex flex-col justify-left">
+                <div className="flex  justify-between items-center space-x-4 flex-col sm:flex-row">
+                  <h4 className="font-bold dark:text-stone-100 text-lg md:text-xl">
+                    Simple Brew
+                  </h4>
+                  <p className="space-x-2 text-center sm:text-left">
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #filter
+                    </span>
+                    <span className="group relative inline-flex shrink-0 items-center gap-[1px] rounded-full bg-stone-100 px-2.5 py-1 my-1.5 text-xs text-black transition-colors duration-200 hover:bg-stone-600 hover:text-stone-50 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700">
+                      #v60
+                    </span>
+                  </p>
+                </div>
+                <p className="text-stone-500 text-sm dark:text-stone-400 text-center sm:text-left">
+                  <span className="hidden sm:inline-block">by</span> AI
+                </p>
+              </div>
+            </Link>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   );
 }
