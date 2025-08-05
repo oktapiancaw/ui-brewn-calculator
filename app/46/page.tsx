@@ -1,7 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -21,14 +20,16 @@ import {
 import {
   ArrowLeft,
   Droplets,
-  GlassWater,
+  Grip,
   Info,
-  ThermometerSun,
-  Timer,
+  Thermometer,
+  Waves,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import PourSection from "@/components/pour-section";
+import MethodHeader from "@/components/method-header";
+import SummaryCard from "@/components/summary-card";
 type RoastLevel = "light" | "medium" | "dark";
 type TasteBalance = "neutral" | "sweetness" | "acidity";
 type Body = "thinner" | "medium" | "stronger";
@@ -142,6 +143,34 @@ export default function TetsuKasuyaMethod() {
     };
   }, [isRunning, seconds, totalDuration]);
 
+  const BrewMethod = {
+    title: "4:6 Method",
+    creator: "Tetsu Kasuya",
+    tags: ["filter", "v60", "champ"],
+  };
+  const summaryCard = [
+    {
+      title: "Total Water",
+      Icon: Waves,
+      notes: totalWater.toFixed(1).toString() + " ml",
+    },
+    {
+      title: "Temperature",
+      Icon: Thermometer,
+      notes: roastTempMap[roastLevel].toString() + "°C",
+    },
+    {
+      title: "Grind Size",
+      Icon: Grip,
+      notes: "Coarse",
+    },
+    {
+      title: "Pouring",
+      Icon: Droplets,
+      notes: (2 + latterPours).toString() + " Pours",
+    },
+  ];
+
   return (
     <>
       <div className="mb-8">
@@ -151,22 +180,11 @@ export default function TetsuKasuyaMethod() {
           </Button>
         </Link>
       </div>
-      <header className="mb-12 flex flex-col justify-start items-center">
-        <div className="text-center">
-          <p className="font-bold text-2xl capitalize text-black dark:text-white">
-            The 4:6 Method
-          </p>
-          <p className="text-stone-600 dark:text-stone-500">
-            <span>by Tetsu Kasuya</span>
-          </p>
-
-          <p className="space-x-1 mt-5">
-            <Badge variant="outline">#filter</Badge>
-            <Badge variant="outline">#v60</Badge>
-            <Badge variant="outline">#champ</Badge>
-          </p>
-        </div>
-      </header>
+      <MethodHeader
+        title={BrewMethod.title}
+        creator={BrewMethod.creator}
+        tags={BrewMethod.tags}
+      />
       <section className="opacity: 1; filter: blur(0px); transform: none;">
         <Alert variant="default">
           <Info className="h-full" />
@@ -290,40 +308,14 @@ export default function TetsuKasuyaMethod() {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Total Water
-              </span>
-              <GlassWater className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">
-                {totalWater.toFixed(1)} ml
-              </span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm text-stone-700 dark:text-stone-400">
-                Temperature
-              </span>
-              <ThermometerSun className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">
-                {roastTempMap[roastLevel]}°C
-              </span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Brew Time
-              </span>
-              <Timer className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">3:30</span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Pouring
-              </span>
-              <Droplets className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">
-                {2 + latterPours} Pours
-              </span>
-            </div>
+            {summaryCard.map((summary, index) => (
+              <SummaryCard
+                key={index}
+                title={summary.title}
+                Icon={summary.Icon}
+                notes={summary.notes}
+              />
+            ))}
           </div>
         </section>
         <PourSection

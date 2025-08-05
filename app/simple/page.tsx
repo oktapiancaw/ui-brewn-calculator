@@ -1,14 +1,13 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   Droplets,
-  GlassWater,
+  Grip,
   Info,
-  ThermometerSun,
-  Timer,
+  Thermometer,
+  Waves,
 } from "lucide-react";
 interface PourStep {
   time: number;
@@ -25,7 +24,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import PourSection from "@/components/pour-section";
-
+import SummaryCard from "@/components/summary-card";
+import MethodHeader from "@/components/method-header";
 
 export default function SimpleOne() {
   const [seconds, setSeconds] = useState<number>(0);
@@ -59,34 +59,58 @@ export default function SimpleOne() {
     return schedule;
   }, [latterPours, eachLatterVol]);
 
-
-
   const totalDuration = Math.max(...pourSchedule.map((item) => item.endTime));
-  // Function to get current active schedule item
 
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
 
-    useEffect(() => {
-      let interval: ReturnType<typeof setInterval> | undefined;
-  
-      if (isRunning && seconds < totalDuration) {
-        interval = setInterval(() => {
-          setSeconds((prevSeconds) => {
-            const next = prevSeconds + 1;
-            if (next >= totalDuration) {
-              setIsRunning(false);
-              return totalDuration;
-            }
-            return next;
-          });
-        }, 1000);
+    if (isRunning && seconds < totalDuration) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          const next = prevSeconds + 1;
+          if (next >= totalDuration) {
+            setIsRunning(false);
+            return totalDuration;
+          }
+          return next;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval !== undefined) {
+        clearInterval(interval);
       }
-  
-      return () => {
-        if (interval !== undefined) {
-          clearInterval(interval);
-        }
-      };
-    }, [isRunning, seconds, totalDuration]);
+    };
+  }, [isRunning, seconds, totalDuration]);
+
+  const BrewMethod = {
+    title: "Simple Brew",
+    creator: "AI",
+    tags: ["filter", "v60"]
+  }
+  const summaryCard = [
+    {
+      title: "Total Water",
+      Icon: Waves,
+      notes: totalWater.toFixed(1).toString() + " ml"
+    },
+    {
+      title: "Temperature",
+      Icon: Thermometer,
+      notes: "90°C"
+    },
+    {
+      title: "Grind Size",
+      Icon: Grip,
+      notes: "Medium coarse"
+    },
+    {
+      title: "Pouring",
+      Icon: Droplets,
+      notes: latterPours.toString() + " Pours"
+    },
+  ]
 
   return (
     <>
@@ -97,21 +121,7 @@ export default function SimpleOne() {
           </Button>
         </Link>
       </div>
-      <header className="mb-12 flex flex-col justify-start items-center">
-        <div className="text-center">
-          <p className="font-bold text-2xl capitalize text-black dark:text-white">
-            Simple Brew
-          </p>
-          <p className="text-stone-600 dark:text-stone-500">
-            <span>by AI</span>
-          </p>
-
-          <p className="space-x-1 mt-5">
-            <Badge variant="outline">#filter</Badge>
-            <Badge variant="outline">#v60</Badge>
-          </p>
-        </div>
-      </header>
+      <MethodHeader title={BrewMethod.title} creator={BrewMethod.creator} tags={BrewMethod.tags}/>
       <main className="space-y-12 max-w-3xl mx-auto p-4">
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <Alert variant="default">
@@ -172,39 +182,21 @@ export default function SimpleOne() {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Total Water
-              </span>
-              <GlassWater className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">
-                {totalWater.toFixed(1)} ml
-              </span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm text-stone-700 dark:text-stone-400">
-                Temperature
-              </span>
-              <ThermometerSun className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">90°C</span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Brew Time
-              </span>
-              <Timer className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">03:00</span>
-            </div>
-            <div className="p-4 border rounded-lg text-center flex items-center flex-col">
-              <span className="text-sm  text-stone-700 dark:text-stone-400">
-                Pouring
-              </span>
-              <Droplets className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-              <span className="font-medium text-base">{latterPours} Pours</span>
-            </div>
+            {
+              summaryCard.map((summary, index) => (
+                <SummaryCard key={index} title={summary.title} Icon={summary.Icon} notes={summary.notes} />
+              ))
+            }
           </div>
         </section>
-        <PourSection pourSchedule={pourSchedule} seconds={seconds} setSeconds={setSeconds} isRunning={isRunning} setIsRunning={setIsRunning} totalDuration={totalDuration} />
+        <PourSection
+          pourSchedule={pourSchedule}
+          seconds={seconds}
+          setSeconds={setSeconds}
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
+          totalDuration={totalDuration}
+        />
       </main>
     </>
   );
