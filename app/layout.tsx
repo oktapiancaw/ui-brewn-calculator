@@ -1,17 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import {  Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Footer } from "./footer";
-
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#ffffff",
 };
 
-const geist = Geist({
-  variable: "--font-geist",
+// const geist = Geist({
+//   variable: "--font-geist",
+//   subsets: ["latin"],
+// });
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -28,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.variable} bg-white tracking-tight antialiased dark:bg-stone-950`}
+        className={`${inter.variable} bg-white tracking-tight antialiased dark:bg-stone-950`}
       >
         <ThemeProvider
           enableSystem={true}

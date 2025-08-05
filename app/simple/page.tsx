@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -7,6 +7,9 @@ import {
   Droplets,
   GlassWater,
   Info,
+  Pause,
+  Play,
+  RotateCcw,
   ThermometerSun,
   Timer,
 } from "lucide-react";
@@ -23,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 
 const formatTime = (seconds: number) => {
@@ -31,7 +35,9 @@ const formatTime = (seconds: number) => {
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
 
-export default function TetsuKasuyaMethod() {
+export default function SimpleOne() {
+  const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
   const [coffeeGrams, setCoffeeGrams] = useState<number>(14);
 
   const totalWater = useMemo(() => coffeeGrams * 15, [coffeeGrams]);
@@ -63,14 +69,79 @@ export default function TetsuKasuyaMethod() {
     return schedule;
   }, [latterPours, eachLatterVol]);
 
+  const totalDuration = Math.max(...pourSchedule.map((item) => item.endTime));
+  // Function to get current active schedule item
+  const getCurrentScheduleItem = () => {
+    return pourSchedule.find(
+      (item) => seconds >= item.time && seconds < item.endTime
+    );
+  };
+
+  const handleStart = () => {
+    setIsRunning(true);
+  };
+
+  const handleStop = () => {
+    setIsRunning(false);
+  };
+
+  const handleReset = () => {
+    setSeconds(0);
+    setIsRunning(false);
+  };
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+
+    if (isRunning && seconds < totalDuration) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          const next = prevSeconds + 1;
+          if (next >= totalDuration) {
+            setIsRunning(false);
+            return totalDuration;
+          }
+          return next;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval !== undefined) {
+        clearInterval(interval);
+      }
+    };
+  }, [isRunning, seconds, totalDuration]);
+  const getBrewTimeClass = (rowIndex: number) => {
+    const currentItem = getCurrentScheduleItem();
+    const baseClasses =
+      "transition-all duration-500 flex items-center justify-between px-4 py-5 rounded-md";
+    if (seconds === 0) {
+      return `${baseClasses} `;
+    } else if (currentItem && pourSchedule.indexOf(currentItem) === rowIndex) {
+      return `${baseClasses} border-l-6 border-green-900/55 border-solid bg-stone-100 font-bold dark:bg-stone-800/30 shadow-mtransform scale-105`;
+    } else if (
+      pourSchedule[rowIndex] &&
+      seconds < pourSchedule[rowIndex].time
+    ) {
+      return `${baseClasses} `;
+    } else if (
+      pourSchedule[rowIndex] &&
+      seconds >= pourSchedule[rowIndex].endTime
+    ) {
+      return `${baseClasses} border-l-6 border-stone-900/55 bg-stone-200 dark:bg-stone-900/30`;
+    } else {
+      return `${baseClasses} `;
+    }
+  };
+
   return (
     <>
       <div className="mb-8">
-        <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
-          <Link href={"/"}>
+        <Link href={"/"}>
+          <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
             <ArrowLeft />
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
       <header className="mb-12 flex flex-col justify-start items-center">
         <div className="text-center">
@@ -88,6 +159,21 @@ export default function TetsuKasuyaMethod() {
         </div>
       </header>
       <main className="space-y-12 max-w-3xl mx-auto p-4">
+        <section className="opacity: 1; filter: blur(0px); transform: none;">
+          <Alert variant="default">
+            <Info className="h-full" />
+            <AlertTitle>Perparations</AlertTitle>
+            <AlertDescription>
+              Things that need to be prepared
+              <ul className="list-disc">
+                <li>Rinse filter & pre-heat V60</li>
+                <li>
+                  <b>Medium-coarse</b> Grind size of coffee
+                </li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+        </section>
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
             Adjustment
@@ -164,7 +250,7 @@ export default function TetsuKasuyaMethod() {
             </div>
           </div>
         </section>
-        <section className="opacity: 1; filter: blur(0px); transform: none;">
+        <section className="opacity: 1; filter: blur(0px); transform: none; space-y-5">
           <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
             Pour Schedule
           </p>
@@ -181,11 +267,8 @@ export default function TetsuKasuyaMethod() {
               </span>
             </div>
 
-            {pourSchedule.map((p) => (
-              <div
-                key={p.index}
-                className="flex items-center justify-between px-4 py-3"
-              >
+            {pourSchedule.map((p, index) => (
+              <div key={index} className={getBrewTimeClass(index)}>
                 <span className="basis-1/3 text-center text-stone-700 dark:text-stone-200 font-medium">
                   {formatTime(p.time)} - {formatTime(p.endTime)}
                 </span>
@@ -197,6 +280,34 @@ export default function TetsuKasuyaMethod() {
                 </span>
               </div>
             ))}
+          </div>
+          <div className="flex justify-center items-center space-x-3 mt-10">
+            <button
+              onClick={handleStart}
+              disabled={isRunning || seconds >= totalDuration}
+              className="p-4 bg-green-800/55 text-white rounded-md hover:bg-green-600 disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
+            >
+              <Play />
+            </button>
+            <button
+              onClick={handleStop}
+              disabled={!isRunning}
+              className="p-4 bg-red-800/55 text-white rounded-md hover:bg-red-600 disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
+            >
+              <Pause />
+            </button>
+            <button
+              onClick={handleReset}
+              className="p-4 bg-stone-800 text-white rounded-md hover:bg-stone-900 transition-colors"
+            >
+              <RotateCcw />
+            </button>
+          </div>
+          <div className="flex justify-center items-center">
+            <div className="text-5xl font-mono font-bold text-stone-700 dark:text-stone-800">
+              {String(Math.floor(seconds / 60)).padStart(2, "0")}:
+              {String(seconds % 60).padStart(2, "0")}
+            </div>
           </div>
         </section>
       </main>
