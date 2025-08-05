@@ -7,14 +7,10 @@ import {
   Droplets,
   GlassWater,
   Info,
-  Pause,
-  Play,
-  RotateCcw,
   ThermometerSun,
   Timer,
 } from "lucide-react";
 interface PourStep {
-  index: string;
   time: number;
   endTime: number;
   volume: number;
@@ -29,12 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
-
-const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
-  const s = Math.round(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-};
+import PourSection from "@/components/pour-section";
 
 export default function BetterOneMethod() {
   const [seconds, setSeconds] = useState(0);
@@ -48,14 +39,12 @@ export default function BetterOneMethod() {
   const pourSchedule: PourStep[] = useMemo(() => {
     const schedule: PourStep[] = [];
     schedule.push({
-      index: Math.random().toString(36).substring(2, 10),
       time: 0,
       endTime: 50,
       volume: eachLatterVol,
       label: "Bloom",
     });
     schedule.push({
-      index: Math.random().toString(36).substring(2, 10),
       time: 10,
       endTime: 15,
       volume: 0,
@@ -66,14 +55,12 @@ export default function BetterOneMethod() {
     for (let i = 1; i < latterPours; i++) {
       const endTimeTemp = bodyTime + 10;
       schedule.push({
-        index: Math.random().toString(36).substring(2, 10),
         time: bodyTime,
         endTime: endTimeTemp,
         volume: eachLatterVol,
         label: `~${((i + 1) * eachLatterVol).toFixed(1)}ml Total`,
       });
       schedule.push({
-        index: Math.random().toString(36).substring(2, 10),
         time: endTimeTemp,
         endTime: endTimeTemp + 10,
         volume: 0,
@@ -82,7 +69,6 @@ export default function BetterOneMethod() {
       bodyTime = endTimeTemp + 10;
     }
     schedule.push({
-      index: Math.random().toString(36).substring(2, 10),
       time: bodyTime,
       endTime: bodyTime + 10,
       volume: eachLatterVol,
@@ -90,7 +76,6 @@ export default function BetterOneMethod() {
     });
 
     schedule.push({
-      index: Math.random().toString(36).substring(2, 10),
       time: 120,
       endTime: 180,
       volume: 0,
@@ -100,25 +85,6 @@ export default function BetterOneMethod() {
   }, [latterPours, eachLatterVol]);
 
   const totalDuration = Math.max(...pourSchedule.map((item) => item.endTime));
-  // Function to get current active schedule item
-  const getCurrentScheduleItem = () => {
-    return pourSchedule.find(
-      (item) => seconds >= item.time && seconds < item.endTime
-    );
-  };
-
-  const handleStart = () => {
-    setIsRunning(true);
-  };
-
-  const handleStop = () => {
-    setIsRunning(false);
-  };
-
-  const handleReset = () => {
-    setSeconds(0);
-    setIsRunning(false);
-  };
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
 
@@ -141,29 +107,6 @@ export default function BetterOneMethod() {
       }
     };
   }, [isRunning, seconds, totalDuration]);
-
-  const getBrewTimeClass = (rowIndex: number) => {
-    const currentItem = getCurrentScheduleItem();
-    const baseClasses =
-      "transition-all duration-300 flex items-center justify-between px-4 py-5 rounded-md";
-    if (seconds === 0) {
-      return `${baseClasses} border border-dashed`;
-    } else if (currentItem && pourSchedule.indexOf(currentItem) === rowIndex) {
-      return `${baseClasses} border border-l-6 border-green-900/55 border-solid bg-white font-bold dark:bg-stone-900/30 shadow-md transform scale-105`;
-    } else if (
-      pourSchedule[rowIndex] &&
-      seconds < pourSchedule[rowIndex].time
-    ) {
-      return `${baseClasses} border border-dashed`;
-    } else if (
-      pourSchedule[rowIndex] &&
-      seconds >= pourSchedule[rowIndex].endTime
-    ) {
-      return `${baseClasses} border border-l-6 dark:border-stone-900/55  bg-stone-50  dark:bg-stone-900/30`;
-    } else {
-      return `${baseClasses} border border-dashed`;
-    }
-  };
 
   return (
     <>
@@ -287,66 +230,14 @@ export default function BetterOneMethod() {
             </div>
           </div>
         </section>
-        <section className="opacity: 1; filter: blur(0px); transform: none; space-y-5">
-          <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
-            Pour Schedule
-          </p>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="basis-1/3 text-center text-sm text-stone-600 dark:text-stone-400 font-semibold">
-                Time
-              </span>
-              <span className="basis-1/4 text-center text-sm text-stone-600 dark:text-stone-400 font-semibold">
-                Volume (ml)
-              </span>
-              <span className="basis-1/3 text-center text-sm text-stone-600 dark:text-stone-400 font-semibold">
-                Label
-              </span>
-            </div>
-
-            {pourSchedule.map((p, index) => (
-              <div key={index} className={getBrewTimeClass(index)}>
-                <span className="basis-1/3 text-center text-stone-700 dark:text-stone-200 font-medium">
-                  {formatTime(p.time)} - {formatTime(p.endTime)}
-                </span>
-                <span className="basis-1/4 text-center text-stone-700 dark:text-stone-200">
-                  {p.volume != 0 ? p.volume.toFixed(1) : ""}
-                </span>
-                <span className="basis-1/3 text-center text-stone-700 dark:text-stone-200">
-                  {p.label}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center items-center space-x-3 mt-10">
-            <button
-              onClick={handleStart}
-              disabled={isRunning || seconds >= totalDuration}
-              className="p-4 bg-green-600 dark:bg-green-800/55 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600  disabled:bg-stone-400 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
-            >
-              <Play />
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!isRunning}
-              className="p-4 bg-red-700 darK:bg-red-800/55 text-white rounded-md hover:bg-red-600 disabled:bg-stone-400 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
-            >
-              <Pause />
-            </button>
-            <button
-              onClick={handleReset}
-              className="p-4 bg-stone-600 dark:bg-stone-800 text-white rounded-md hover:bg-stone-700 dark:hover:bg-stone-900 transition-colors"
-            >
-              <RotateCcw />
-            </button>
-          </div>
-          <div className="flex justify-center items-center">
-            <div className="text-5xl font-mono font-bold text-stone-300 dark:text-stone-800">
-              {String(Math.floor(seconds / 60)).padStart(2, "0")}:
-              {String(seconds % 60).padStart(2, "0")}
-            </div>
-          </div>
-        </section>
+        <PourSection
+          pourSchedule={pourSchedule}
+          seconds={seconds}
+          setSeconds={setSeconds}
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
+          totalDuration={totalDuration}
+        />
       </main>
     </>
   );
