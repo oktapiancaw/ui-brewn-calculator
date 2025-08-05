@@ -176,11 +176,11 @@ export default function TetsuKasuyaMethod() {
   const getBrewTimeClass = (rowIndex: number) => {
     const currentItem = getCurrentScheduleItem();
     const baseClasses =
-      "transition-all duration-500 flex items-center justify-between px-4 py-5 rounded-md";
+      "transition-all duration-300 flex items-center justify-between px-4 py-5 rounded-md";
     if (seconds === 0) {
       return `${baseClasses} border border-dashed`;
     } else if (currentItem && pourSchedule.indexOf(currentItem) === rowIndex) {
-      return `${baseClasses} border-l-6 border-green-900/55 border-solid bg-stone-100 font-bold dark:bg-stone-800/30 shadow-mtransform scale-105`;
+      return `${baseClasses} border border-l-6 border-green-900/55 border-solid bg-white font-bold dark:bg-stone-900/30 shadow-md transform scale-105`;
     } else if (
       pourSchedule[rowIndex] &&
       seconds < pourSchedule[rowIndex].time
@@ -190,7 +190,7 @@ export default function TetsuKasuyaMethod() {
       pourSchedule[rowIndex] &&
       seconds >= pourSchedule[rowIndex].endTime
     ) {
-      return `${baseClasses} border-l-6 border-stone-900/55  bg-stone-200 dark:bg-stone-900/30`;
+      return `${baseClasses} border border-l-6 dark:border-stone-900/55  bg-stone-50  dark:bg-stone-900/30`;
     } else {
       return `${baseClasses} border border-dashed`;
     }
@@ -415,26 +415,26 @@ export default function TetsuKasuyaMethod() {
             <button
               onClick={handleStart}
               disabled={isRunning || seconds >= totalDuration}
-              className="p-4 bg-green-800/55 text-white rounded-md hover:bg-green-600 disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
+              className="p-4 bg-green-600 dark:bg-green-800/55 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600  disabled:bg-stone-400 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
             >
               <Play />
             </button>
             <button
               onClick={handleStop}
               disabled={!isRunning}
-              className="p-4 bg-red-800/55 text-white rounded-md hover:bg-red-600 disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
+              className="p-4 bg-red-700 darK:bg-red-800/55 text-white rounded-md hover:bg-red-600 disabled:bg-stone-400 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
             >
               <Pause />
             </button>
             <button
               onClick={handleReset}
-              className="p-4 bg-stone-800 text-white rounded-md hover:bg-stone-900 transition-colors"
+              className="p-4 bg-stone-600 dark:bg-stone-800 text-white rounded-md hover:bg-stone-700 dark:hover:bg-stone-900 transition-colors"
             >
               <RotateCcw />
             </button>
           </div>
           <div className="flex justify-center items-center">
-            <div className="text-5xl font-mono font-bold text-stone-700 dark:text-stone-800">
+            <div className="text-5xl font-mono font-bold text-stone-300 dark:text-stone-800">
               {String(Math.floor(seconds / 60)).padStart(2, "0")}:
               {String(seconds % 60).padStart(2, "0")}
             </div>
