@@ -23,6 +23,13 @@ const MENU_LIST = [
     tags: ["filter", "v60"],
     url: "/simple",
   },
+  {
+    id: 4,
+    title: "Make Your Own",
+    creator: "Yourself",
+    tags: ["filter", "v60"],
+    url: "/custom",
+  },
 ];
 
 export default function Home() {
