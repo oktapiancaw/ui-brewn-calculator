@@ -1,8 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import MethodHeader from "@/components/method-header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Divide, Droplets, Hash, Plus, Sliders, Timer, Trash2, Waves } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  ArrowDownToLine,
+  ArrowLeft,
+  Divide,
+  Droplets,
+  Eye,
+  EyeOff,
+  Hash,
+  Info,
+  Plus,
+  Sliders,
+  Timer,
+  Trash2,
+  Waves,
+} from "lucide-react";
 import Link from "next/link";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -16,16 +31,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SummaryCard from "@/components/summary-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
 
-type BrewMethod = {
-  title: string;
-  creator: string;
-  coffeeGram: number;
-  tags: string[];
-  grindSize: string;
-  roastLevel: string;
-  waterTemp: number;
-};
 interface PourStep {
   id: number;
   time: number;
@@ -33,42 +45,156 @@ interface PourStep {
   volume: number;
   label: string;
 }
-export default function CustomePage() {
-  const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+type BrewMethod = {
+  title: string;
+  creator: string;
+  coffeeGram: number;
+  preparation?: string;
+  tags: string[];
+  grindSize: string;
+  roastLevel: string;
+  waterTemp: number;
+  schedules: PourStep[];
+};
 
-  const [method, setMethod] = useState<BrewMethod>({
-    title: "Make your Own",
-    creator: "Yourself",
-    tags: ["filter", "v60"],
-    coffeeGram: 14,
-    grindSize: "fine",
-    roastLevel: "medium",
-    waterTemp: 90
-  })
-  const [useNumberInput, setUseNumberInput] = useState(false);
-  const maxSeconds = 1200; // 20 Minutes
-  const [schedules, setSchedules] = useState<PourStep[]>([
+const defaultMethod = {
+  title: "Make your Own",
+  creator: "Yourself",
+  tags: ["filter", "v60"],
+  coffeeGram: 14,
+  grindSize: "fine",
+  roastLevel: "medium",
+  waterTemp: 90,
+  schedules: [
     {
       id: 1,
       time: 0,
-      endTime: 60,
+      endTime: 45,
       volume: 40,
       label: "Bloom (click to change)",
     },
-  ]);
+    {
+      id: 2,
+      time: 45,
+      endTime: 120,
+      volume: 50,
+      label: "",
+    },
+    {
+      id: 3,
+      time: 120,
+      endTime: 200,
+      volume: 120,
+      label: "",
+    },
+    {
+      id: 4,
+      time: 200,
+      endTime: 240,
+      volume: 0,
+      label: "Wait the drawdown",
+    },
+  ],
+};
+
+export default function CustomePage() {
+  const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [maxDuration, setMaxDuration] = useState(240);
+  const [isHidden, setIsHidden] = useState(false);
+
+  const [method, setMethod] = useState<BrewMethod>(defaultMethod);
+
+  const handleExport = () => {
+    const json = JSON.stringify(method, null, 2); // pretty print
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = method.title + ".json"; // filename
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const isValidBrewMethod = (data: any): data is BrewMethod => {
+    return (
+      typeof data.title === "string" &&
+      typeof data.creator === "string" &&
+      typeof data.coffeeGram === "number" &&
+      Array.isArray(data.tags) &&
+      typeof data.grindSize === "string" &&
+      typeof data.roastLevel === "string" &&
+      typeof data.waterTemp === "number" &&
+      Array.isArray(data.schedules) &&
+      data.schedules.every(
+        (s: any) =>
+          typeof s.id === "number" &&
+          typeof s.time === "number" &&
+          typeof s.endTime === "number" &&
+          typeof s.volume === "number" &&
+          typeof s.label === "string"
+      )
+    );
+  };
+
+  const handleResetUpload = () => {
+    if (isUploaded) {
+      setMethod(defaultMethod);
+      setIsUploaded(false);
+    }
+  };
+  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsed = JSON.parse(content);
+
+        if (isValidBrewMethod(parsed)) {
+          setMethod(parsed);
+          setIsUploaded(true);
+          console.log("Valid BrewMethod:", parsed);
+        } else {
+          throw new Error("Invalid BrewMethod structure");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Invalid BrewMethod JSON file");
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  const [useNumberInput, setUseNumberInput] = useState(false);
+
+  const updateMethodField = <K extends keyof BrewMethod>(
+    key: K,
+    value: BrewMethod[K]
+  ) => {
+    setMethod((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   const addSchedule = () => {
-    const newId = Math.max(...schedules.map((i) => i.id)) + 1;
-    const lastSchedule = schedules[schedules.length - 1];
+    const newId = Math.max(...method.schedules.map((i) => i.id)) + 1;
+    const lastSchedule = method.schedules[method.schedules.length - 1];
     const newStart = Math.min(
       lastSchedule ? lastSchedule.endTime : 0,
-      maxSeconds - 10
+      maxDuration - 10
     );
-    const newEnd = Math.min(newStart + 30, maxSeconds);
+    const newEnd = Math.min(newStart + 30, maxDuration);
 
-    setSchedules([
-      ...schedules,
+    updateMethodField("schedules", [
+      ...method.schedules,
       {
         id: newId,
         time: newStart,
@@ -80,27 +206,22 @@ export default function CustomePage() {
   };
 
   const removeSchedule = (id: number) => {
-    if (schedules.length > 1) {
-      setSchedules(schedules.filter((schedule) => schedule.id !== id));
+    if (method.schedules.length > 1) {
+      updateMethodField(
+        "schedules",
+        method.schedules.filter((schedule) => schedule.id !== id)
+      );
     }
   };
-  const updateMethodField = <K extends keyof BrewMethod>(
-      key: K,
-      value: BrewMethod[K]
-    ) => {
-      setMethod((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
-    };
   const updateSchedule = (id: number, field: string, value: number) => {
-    setSchedules(
-      schedules.map((schedule) => {
+    updateMethodField(
+      "schedules",
+      method.schedules.map((schedule) => {
         if (schedule.id === id) {
           const updated = { ...schedule, [field]: value };
 
           if (field === "time" && updated.time >= updated.endTime) {
-            updated.endTime = Math.min(updated.time + 1, maxSeconds);
+            updated.endTime = Math.min(updated.time + 1, maxDuration);
           }
           if (field === "endTime" && updated.endTime <= updated.time) {
             updated.time = Math.max(updated.endTime - 1, 0);
@@ -112,14 +233,21 @@ export default function CustomePage() {
     );
   };
 
-  const totalCycleDuration = schedules.reduce(
-    (total, schedule) => total + (schedule.endTime - schedule.time),
-    0
-  );
-  const totalWaterVolume = schedules.reduce(
-    (total, schedule) => total + schedule.volume,
-    0
-  );
+
+  const totalCycleDuration = useMemo(() => {
+    if (!method) return 0;
+    return method.schedules.reduce((total, schedule) => total + (schedule.endTime - schedule.time), 0);
+  }, [method]);
+
+  const totalWaterVolume = useMemo(() => {
+    if (!method) return 0;
+    return method.schedules.reduce((total, schedule) => total + schedule.volume, 0);
+  }, [method]);
+
+  const totalPours = useMemo(() => {
+    if (!method) return 0;
+    return method.schedules.filter((schedule) => schedule.volume > 0).length;
+  }, [method]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
@@ -145,15 +273,18 @@ export default function CustomePage() {
   }, [isRunning, seconds, totalCycleDuration]);
 
   const updateScheduleName = (id: number, label: string) => {
-    setSchedules(
-      schedules.map((schedule) =>
+    updateMethodField(
+      "schedules",
+      method.schedules.map((schedule) =>
         schedule.id === id ? { ...schedule, label } : schedule
       )
     );
   };
+
   const updateScheduleVolume = (id: number, volume: number) => {
-    setSchedules(
-      schedules.map((schedule) =>
+    updateMethodField(
+      "schedules",
+      method.schedules.map((schedule) =>
         schedule.id === id ? { ...schedule, volume } : schedule
       )
     );
@@ -167,7 +298,6 @@ export default function CustomePage() {
       .toString()
       .padStart(2, "0")}`;
   };
-
 
   const summaryCard = [
     {
@@ -188,7 +318,7 @@ export default function CustomePage() {
     {
       title: "Pouring",
       Icon: Droplets,
-      notes: (schedules.length).toString() + " Pours",
+      notes: totalPours + " Pours",
     },
   ];
   return (
@@ -211,6 +341,56 @@ export default function CustomePage() {
             Builder
           </p>
 
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center space-x-2 mb-4">
+            <label
+              className="font-semibold min-w-1/2 text-sm text-stone-700 dark:text-stone-400 sm:mb-0 mb-2"
+              htmlFor="methodName"
+            >
+              Import & Export
+            </label>
+            <div className="flex w-full justify-between items-center space-x-2">
+              <div className="flex w-full items-center space-x-2">
+                <Input
+                  id="picture"
+                  type="file"
+                  className="w-full"
+                  onChange={handleUpload}
+                />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={`h-[40px] md:w-[40px] ${
+                        !isUploaded ? "hidden" : ""
+                      }`}
+                      onClick={handleResetUpload}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-bold ">Reset to default</p>
+                  </TooltipContent>
+                </Tooltip>
+
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className="h-[40px] md:w-[40px]"
+                    onClick={handleExport}
+                  >
+                    <ArrowDownToLine />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="font-bold ">Save to JSON file</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="grid w-full items-center gap-2 my-2">
               <label
@@ -225,7 +405,7 @@ export default function CustomePage() {
                   id="methodName"
                   type="text"
                   value={method.title}
-                  onChange={(e) => updateMethodField('title', e.target.value)}
+                  onChange={(e) => updateMethodField("title", e.target.value)}
                 />
               </div>
             </div>
@@ -242,7 +422,7 @@ export default function CustomePage() {
                   id="yourName"
                   type="text"
                   value={method.creator}
-                  onChange={(e) => updateMethodField('creator', e.target.value)}
+                  onChange={(e) => updateMethodField("creator", e.target.value)}
                 />
               </div>
             </div>
@@ -259,7 +439,9 @@ export default function CustomePage() {
                   id="coffeeGram"
                   type="number"
                   value={method.coffeeGram}
-                  onChange={(e) => updateMethodField('coffeeGram', Number(e.target.value))}
+                  onChange={(e) =>
+                    updateMethodField("coffeeGram", Number(e.target.value))
+                  }
                   min={5}
                   step={0.5}
                 />
@@ -270,7 +452,7 @@ export default function CustomePage() {
                 className="font-semibold text-sm text-stone-700 dark:text-stone-400"
                 htmlFor="waterTemp"
               >
-                Water Temperature (Celcius)
+                Water Temperature (°C)
               </label>
 
               <div className="flex justify-center items-center space-x-2">
@@ -278,7 +460,9 @@ export default function CustomePage() {
                   id="waterTemp"
                   type="number"
                   value={method.waterTemp}
-                  onChange={(e) => updateMethodField('waterTemp', Number(e.target.value))}
+                  onChange={(e) =>
+                    updateMethodField("waterTemp", Number(e.target.value))
+                  }
                   min={-40}
                   max={200}
                   step={0.5}
@@ -291,7 +475,7 @@ export default function CustomePage() {
               </span>
               <Select
                 value={method.grindSize}
-                onValueChange={(e) => updateMethodField('grindSize', e)}
+                onValueChange={(e) => updateMethodField("grindSize", e)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select grind size" />
@@ -313,7 +497,7 @@ export default function CustomePage() {
               </span>
               <Select
                 value={method.roastLevel}
-                onValueChange={(e) => updateMethodField('roastLevel', e)}
+                onValueChange={(e) => updateMethodField("roastLevel", e)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select roast Level" />
@@ -329,12 +513,32 @@ export default function CustomePage() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="grid w-full items-center sm:col-span-2 gap-2 my-2">
+              <label
+                className="font-semibold text-sm text-stone-700 dark:text-stone-400"
+                htmlFor="preparation"
+              >
+                Preparation
+              </label>
+
+              <div className="flex justify-center items-center space-x-2">
+                <Textarea
+                  placeholder="Type your preparation."
+                  id="preparation"
+                  className="max-h-[160px] sm:h-[40px] h-[120px]"
+                  value={method.preparation}
+                  onChange={(e) =>
+                    updateMethodField("preparation", e.target.value)
+                  }
+                />
+              </div>
+            </div>
           </div>
         </section>
         <section className="opacity: 1; filter: blur(0px); transform: none; mb-20">
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row items-center justify-between">
-              <h3 className="text-xl font-semibold text-stone-800 mb-4 sm:mb-0">
+              <h3 className="text-xl font-semibold text-stone-800 dark:text-stone-400 mb-4 sm:mb-0">
                 Schedules
               </h3>
               <div className="flex items-center justify-between w-full sm:w-auto gap-3">
@@ -342,6 +546,8 @@ export default function CustomePage() {
                   <button
                     onClick={() => setUseNumberInput(false)}
                     className={`p-1 rounded transition-colors ${
+                      isHidden ? "hidden" : ""
+                    } ${
                       !useNumberInput
                         ? "bg-stone-800 text-white duration-300 "
                         : "text-stone-600 duration-300  hover:bg-stone-200 dark:hover:bg-stone-800"
@@ -353,6 +559,8 @@ export default function CustomePage() {
                   <button
                     onClick={() => setUseNumberInput(true)}
                     className={`p-1 rounded transition-colors ${
+                      isHidden ? "hidden" : ""
+                    } ${
                       useNumberInput
                         ? "bg-stone-800 text-white duration-300 "
                         : "text-stone-600 duration-300  hover:bg-stone-200 dark:hover:bg-stone-800"
@@ -364,18 +572,28 @@ export default function CustomePage() {
                 </div>
                 <button
                   onClick={addSchedule}
-                  className="flex items-center gap-2 px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-900 duration-300 transition-colors"
+                  className={`flex items-center gap-2 px-4 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-900 duration-300 transition-colors ${
+                    isHidden ? "hidden" : ""
+                  }`}
                 >
                   <Plus size={16} />
                   Add Schedule
                 </button>
+                <button
+                  onClick={() => setIsHidden(!isHidden)}
+                  className="flex items-center gap-2 p-2 bg-stone-800 text-white rounded-lg hover:bg-stone-900 duration-300 transition-colors"
+                >
+                  {!isHidden ? <Eye /> : <EyeOff />}
+                </button>
               </div>
             </div>
 
-            {schedules.map((schedule, index) => (
+            {method.schedules.map((schedule, index) => (
               <div
-                key={schedule.id}
-                className={`p-4 border-2 rounded-lg transition-all border-stone-200 dark:border-stone-800`}
+                key={index}
+                className={`p-4 border-2 rounded-lg transition-all border-stone-200 dark:border-stone-800 ${
+                  isHidden ? "hidden" : ""
+                }`}
               >
                 <div className="flex flex-col items-left sm:flex-row sm:items-center justify-between mb-3">
                   <input
@@ -390,7 +608,7 @@ export default function CustomePage() {
                     <span className="text-sm text-stone-500">
                       Duration: {formatTime(schedule.endTime - schedule.time)}
                     </span>
-                    {schedules.length > 1 && (
+                    {method.schedules.length > 1 && (
                       <button
                         onClick={() => removeSchedule(schedule.id)}
                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -410,6 +628,7 @@ export default function CustomePage() {
                     {useNumberInput ? (
                       <div className="space-y-2">
                         <Input
+                          disabled={isHidden}
                           type="number"
                           value={schedule.time}
                           onChange={(e) =>
@@ -420,16 +639,17 @@ export default function CustomePage() {
                             )
                           }
                           min={5}
-                          max={maxSeconds - 1}
+                          max={maxDuration - 1}
                           step={1}
                         />
                       </div>
                     ) : (
                       <div className="space-y-2">
                         <Slider
+                          disabled={isHidden}
                           defaultValue={[schedule.time]}
                           value={[schedule.time]}
-                          max={maxSeconds}
+                          max={maxDuration}
                           step={1}
                           onValueChange={(e) =>
                             updateSchedule(schedule.id, "time", e[0])
@@ -437,7 +657,7 @@ export default function CustomePage() {
                         />
                         <div className="flex justify-between text-xs text-stone-500">
                           <span>0</span>
-                          <span>{maxSeconds - 1}</span>
+                          <span>{maxDuration - 1}</span>
                         </div>
                       </div>
                     )}
@@ -456,6 +676,7 @@ export default function CustomePage() {
                     {useNumberInput ? (
                       <div className="space-y-2">
                         <Input
+                          disabled={isHidden}
                           type="number"
                           value={schedule.endTime}
                           onChange={(e) =>
@@ -466,16 +687,17 @@ export default function CustomePage() {
                             )
                           }
                           min={1}
-                          max={maxSeconds}
+                          max={maxDuration}
                           step={1}
                         />
                       </div>
                     ) : (
                       <div className="space-y-2">
                         <Slider
+                          disabled={isHidden}
                           defaultValue={[schedule.endTime]}
                           value={[schedule.endTime]}
-                          max={maxSeconds}
+                          max={maxDuration}
                           step={1}
                           onValueChange={(e) =>
                             updateSchedule(schedule.id, "endTime", e[0])
@@ -483,7 +705,7 @@ export default function CustomePage() {
                         />
                         <div className="flex justify-between text-xs text-stone-500">
                           <span>1</span>
-                          <span>{maxSeconds}</span>
+                          <span>{maxDuration}</span>
                         </div>
                       </div>
                     )}
@@ -501,9 +723,9 @@ export default function CustomePage() {
                     <div
                       className="absolute h-full bg-gradient-to-r from-lime-400 to-green-500 opacity-75"
                       style={{
-                        left: `${(schedule.time / maxSeconds) * 100}%`,
+                        left: `${(schedule.time / maxDuration) * 100}%`,
                         width: `${
-                          ((schedule.endTime - schedule.time) / maxSeconds) *
+                          ((schedule.endTime - schedule.time) / maxDuration) *
                           100
                         }%`,
                       }}
@@ -524,6 +746,7 @@ export default function CustomePage() {
 
                   <div className="flex justify-center items-center space-x-2">
                     <Input
+                      disabled={isHidden}
                       id="coffeeGram"
                       type="number"
                       value={schedule.volume}
@@ -540,7 +763,46 @@ export default function CustomePage() {
                 </div>
               </div>
             ))}
+            <div className={`mt-4  ${isHidden ? "hidden" : ""}`}>
+              <label
+                className="font-semibold block text-sm text-stone-700 dark:text-stone-400 mb-2"
+                htmlFor="maxDuration"
+              >
+                Max Duration (seconds)
+              </label>
+
+              <div className="flex justify-center items-center space-x-2">
+                <Input
+                  id="maxDuration"
+                  type="number"
+                  value={
+                    totalCycleDuration > maxDuration
+                      ? totalCycleDuration
+                      : maxDuration
+                  }
+                  onChange={(e) => setMaxDuration(Number(e.target.value))}
+                  min={30}
+                  step={1}
+                />
+              </div>
+            </div>
+            <div className={`mt-8  ${!isHidden ? "hidden" : ""}`}>
+              <p className="text-center text-stone-400 dark:text-stone-700  ">
+                {" "}
+                Schedule has been hidden{" "}
+              </p>
+            </div>
           </div>
+        </section>
+
+        <section className={`opacity: 1; filter: blur(0px); transform: none; ${!method.preparation ? 'hidden' : ''} `}>
+          <Alert variant="default">
+            <Info className="h-full" />
+            <AlertTitle>Perparations</AlertTitle>
+            <AlertDescription className=" whitespace-pre-line">
+              {method.preparation}
+            </AlertDescription>
+          </Alert>
         </section>
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
@@ -559,7 +821,7 @@ export default function CustomePage() {
           </div>
         </section>
         <PourSection
-          pourSchedule={schedules}
+          pourSchedule={method.schedules}
           seconds={seconds}
           setSeconds={setSeconds}
           isRunning={isRunning}
@@ -567,28 +829,6 @@ export default function CustomePage() {
           totalDuration={totalCycleDuration}
         />
       </main>
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #3b82f6;
-          cursor: pointer;
-          border: 2px solid #ffffff;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #3b82f6;
-          cursor: pointer;
-          border: 2px solid #ffffff;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-      `}</style>
     </>
   );
 }

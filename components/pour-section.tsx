@@ -87,7 +87,7 @@ export default function PourSection({ pourSchedule, seconds, setSeconds, isRunni
               {formatTime(p.time)} - {formatTime(p.endTime)}
             </span>
             <span className="basis-1/4 text-center text-stone-700 dark:text-stone-200">
-              {p.volume.toFixed(1)}
+              {p.volume != 0 ? p.volume.toFixed(1) : ''}
             </span>
             <span className="basis-1/3 text-center text-stone-700 dark:text-stone-200">
               {p.label}
