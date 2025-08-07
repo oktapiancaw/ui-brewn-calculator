@@ -13,7 +13,7 @@ export default function SummaryCard({ title, Icon, notes }: summaryCardProps) {
         {title}
       </span>
       <Icon className="h-[2.5rem] w-[2.5rem] my-4 stroke-stone-900 dark:stroke-stone-100" />
-      <span className="font-medium text-base">{notes}</span>
+      <span className="font-medium text-base text-stone-400">{notes}</span>
     </div>
   );
 }
