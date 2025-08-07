@@ -119,24 +119,32 @@ export default function CustomePage() {
     URL.revokeObjectURL(url);
   };
 
-  const isValidBrewMethod = (data: any): data is BrewMethod => {
+  const isValidBrewMethod = (data: unknown): data is BrewMethod => {
+    if (typeof data !== "object" || data === null) return false;
+
+    const bm = data as Record<string, unknown>;
+
     return (
-      typeof data.title === "string" &&
-      typeof data.creator === "string" &&
-      typeof data.coffeeGram === "number" &&
-      Array.isArray(data.tags) &&
-      typeof data.grindSize === "string" &&
-      typeof data.roastLevel === "string" &&
-      typeof data.waterTemp === "number" &&
-      Array.isArray(data.schedules) &&
-      data.schedules.every(
-        (s: any) =>
-          typeof s.id === "number" &&
-          typeof s.time === "number" &&
-          typeof s.endTime === "number" &&
-          typeof s.volume === "number" &&
-          typeof s.label === "string"
-      )
+      typeof bm.title === "string" &&
+      typeof bm.creator === "string" &&
+      typeof bm.coffeeGram === "number" &&
+      Array.isArray(bm.tags) &&
+      bm.tags.every((tag) => typeof tag === "string") &&
+      typeof bm.grindSize === "string" &&
+      typeof bm.roastLevel === "string" &&
+      typeof bm.waterTemp === "number" &&
+      Array.isArray(bm.schedules) &&
+      bm.schedules.every((s: unknown) => {
+        if (typeof s !== "object" || s === null) return false;
+        const step = s as Record<string, unknown>;
+        return (
+          typeof step.id === "number" &&
+          typeof step.time === "number" &&
+          typeof step.endTime === "number" &&
+          typeof step.volume === "number" &&
+          typeof step.label === "string"
+        );
+      })
     );
   };
 
@@ -233,15 +241,20 @@ export default function CustomePage() {
     );
   };
 
-
   const totalCycleDuration = useMemo(() => {
     if (!method) return 0;
-    return method.schedules.reduce((total, schedule) => total + (schedule.endTime - schedule.time), 0);
+    return method.schedules.reduce(
+      (total, schedule) => total + (schedule.endTime - schedule.time),
+      0
+    );
   }, [method]);
 
   const totalWaterVolume = useMemo(() => {
     if (!method) return 0;
-    return method.schedules.reduce((total, schedule) => total + schedule.volume, 0);
+    return method.schedules.reduce(
+      (total, schedule) => total + schedule.volume,
+      0
+    );
   }, [method]);
 
   const totalPours = useMemo(() => {
@@ -372,7 +385,6 @@ export default function CustomePage() {
                     <p className="font-bold ">Reset to default</p>
                   </TooltipContent>
                 </Tooltip>
-
               </div>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -795,7 +807,11 @@ export default function CustomePage() {
           </div>
         </section>
 
-        <section className={`opacity: 1; filter: blur(0px); transform: none; ${!method.preparation ? 'hidden' : ''} `}>
+        <section
+          className={`opacity: 1; filter: blur(0px); transform: none; ${
+            !method.preparation ? "hidden" : ""
+          } `}
+        >
           <Alert variant="default">
             <Info className="h-full" />
             <AlertTitle>Perparations</AlertTitle>
