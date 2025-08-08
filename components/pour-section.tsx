@@ -92,7 +92,7 @@ export default function PourSection({
         </div>
 
         {pourSchedule.map((p, index) => (
-          <div key={index} className={getBrewTimeClass(index)}>
+          <div key={index} className={getBrewTimeClass(index)} onClick={() => !isRunning ? setSeconds(p.time) : ''}>
             <span className="text-sm sm:text-base basis-4/12 text-center text-stone-700 dark:text-stone-200 font-medium">
               {formatTime(p.time)} - {formatTime(p.endTime)}
             </span>
