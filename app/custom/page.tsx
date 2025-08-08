@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   ArrowDownToLine,
   ArrowLeft,
+  CircleCheck,
   Divide,
   Droplets,
   Eye,
@@ -37,6 +38,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import MultiValueInput from "@/components/multi-value-input";
 
 interface PourStep {
   id: number;
@@ -50,6 +53,7 @@ type BrewMethod = {
   creator: string;
   coffeeGram: number;
   preparation?: string;
+  keyNotes?: string;
   tags: string[];
   grindSize: string;
   roastLevel: string;
@@ -113,10 +117,14 @@ export default function CustomePage() {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = method.title + ".json"; // filename
+    link.download = method.title + " by " + method.creator + ".json"; // filename
     link.click();
 
     URL.revokeObjectURL(url);
+
+    toast.success("Success export", {
+      description: "Success to export your method, check it on your folder"
+    })
   };
 
   const isValidBrewMethod = (data: unknown): data is BrewMethod => {
@@ -152,6 +160,10 @@ export default function CustomePage() {
     if (isUploaded) {
       setMethod(defaultMethod);
       setIsUploaded(false);
+
+      toast.info("Method reset", {
+        description: "Brew method has been reset to default"
+      })
     }
   };
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,11 +179,20 @@ export default function CustomePage() {
         if (isValidBrewMethod(parsed)) {
           setMethod(parsed);
           setIsUploaded(true);
-          console.log("Valid BrewMethod:", parsed);
+
+          toast.success("Success import", {
+            description: "Your brew method is valid, and success to import"
+          })
         } else {
+          toast.error("Failed to import", {
+            description: "Your brew method is invalid"
+          })
           throw new Error("Invalid BrewMethod structure");
         }
       } catch (err) {
+        toast.error("Failed to import", {
+          description: "Your brew method is invalid"
+        })
         console.error(err);
         alert("Invalid BrewMethod JSON file");
       }
@@ -343,6 +364,7 @@ export default function CustomePage() {
           </Button>
         </Link>
       </div>
+
       <MethodHeader
         title={method.title}
         creator={method.creator}
@@ -544,6 +566,36 @@ export default function CustomePage() {
                   }
                 />
               </div>
+            </div>
+            <div className="grid w-full items-center sm:col-span-2 gap-2 my-2">
+              <label
+                className="font-semibold text-sm text-stone-700 dark:text-stone-400"
+                htmlFor="keyNotes"
+              >
+                Key Notes
+              </label>
+
+              <div className="flex justify-center items-center space-x-2">
+                <Textarea
+                  placeholder="For example, this brewing method is suitable for what kind of coffee?"
+                  id="keyNotes"
+                  className="max-h-[160px] sm:h-[40px] h-[120px]"
+                  value={method.keyNotes}
+                  onChange={(e) =>
+                    updateMethodField("keyNotes", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid w-full items-center sm:col-span-2 gap-2 my-2">
+              <label
+                className="font-semibold text-sm text-stone-700 dark:text-stone-400"
+              >
+                Tags
+              </label>
+              <MultiValueInput value={method.tags} onChange={(e) =>
+                    updateMethodField("tags", e)} />
             </div>
           </div>
         </section>
@@ -807,19 +859,6 @@ export default function CustomePage() {
           </div>
         </section>
 
-        <section
-          className={`opacity: 1; filter: blur(0px); transform: none; ${
-            !method.preparation ? "hidden" : ""
-          } `}
-        >
-          <Alert variant="default">
-            <Info className="h-full" />
-            <AlertTitle>Perparations</AlertTitle>
-            <AlertDescription className=" whitespace-pre-line">
-              {method.preparation}
-            </AlertDescription>
-          </Alert>
-        </section>
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
             Summary
@@ -835,6 +874,32 @@ export default function CustomePage() {
               />
             ))}
           </div>
+        </section>
+        <section
+          className={`opacity: 1; filter: blur(0px); transform: none; ${
+            !method.keyNotes ? "hidden" : ""
+          } `}
+        >
+          <Alert variant="default">
+            <CircleCheck className="h-full" />
+            <AlertTitle>Key Notes</AlertTitle>
+            <AlertDescription className=" whitespace-pre-line">
+              {method.keyNotes}
+            </AlertDescription>
+          </Alert>
+        </section>
+        <section
+          className={`opacity: 1; filter: blur(0px); transform: none; ${
+            !method.preparation ? "hidden" : ""
+          } `}
+        >
+          <Alert variant="default">
+            <Info className="h-full" />
+            <AlertTitle>Preparations</AlertTitle>
+            <AlertDescription className=" whitespace-pre-line">
+              {method.preparation}
+            </AlertDescription>
+          </Alert>
         </section>
         <PourSection
           pourSchedule={method.schedules}

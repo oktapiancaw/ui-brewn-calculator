@@ -3,6 +3,7 @@ import {  Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Footer } from "./footer";
+import { Toaster } from "@/components/ui/sonner";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -40,7 +41,8 @@ export default function RootLayout({
           defaultTheme="light"
         >
           <div className="flex min-h-screen w-full flex-col font-[family-name:var(--font-inter-tight)]">
-            <div className="relative mx-auto w-full max-w-screen-sm max-w-screen-xs flex-1 px-4 sm:px-6 md:px-12 pt-20 border-x-2 border-dashed">
+            <div className="relative mx-auto w-full max-w-screen-sm flex-1 px-4 sm:px-6 md:px-12 pt-20 border-x-2 border-dashed">
+              <Toaster position={"top-center"} />
               {children}
               <Footer />
             </div>

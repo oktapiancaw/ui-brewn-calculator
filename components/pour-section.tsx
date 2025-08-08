@@ -75,6 +75,9 @@ export default function PourSection({
 
   return (
     <section className="opacity: 1; filter: blur(0px); transform: none; space-y-5">
+      <div className="flex items-center justify-center">
+        <hr className="border-t-2 border-dashed mt-12 mb-8 w-1/2 " />
+      </div>
       <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
         Pour Schedule
       </p>
