@@ -1,7 +1,7 @@
 import React, { useState, KeyboardEvent } from "react";
 
 interface MultiValueInputProps {
-  value?: string[]
+  value?: string[];
   onChange?: (values: string[]) => void;
   placeholder?: string;
 }
@@ -9,7 +9,7 @@ interface MultiValueInputProps {
 const MultiValueInput: React.FC<MultiValueInputProps> = ({
   value = [],
   onChange,
-  placeholder = "Type and press space..."
+  placeholder = "Type and press space...",
 }) => {
   const [values, setValues] = useState<string[]>(value);
   const [inputValue, setInputValue] = useState("");
@@ -21,7 +21,11 @@ const MultiValueInput: React.FC<MultiValueInputProps> = ({
       setValues(newValues);
       setInputValue("");
       onChange?.(newValues);
-    } else if (e.key === "Backspace" && inputValue === "" && values.length > 0) {
+    } else if (
+      e.key === "Backspace" &&
+      inputValue === "" &&
+      values.length > 0
+    ) {
       const newValues = values.slice(0, -1);
       setValues(newValues);
       onChange?.(newValues);

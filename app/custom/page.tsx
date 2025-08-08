@@ -107,25 +107,8 @@ export default function CustomePage() {
   const [isUploaded, setIsUploaded] = useState(false);
   const [maxDuration, setMaxDuration] = useState(240);
   const [isHidden, setIsHidden] = useState(false);
-
+  const [useNumberInput, setUseNumberInput] = useState(true);
   const [method, setMethod] = useState<BrewMethod>(defaultMethod);
-
-  const handleExport = () => {
-    const json = JSON.stringify(method, null, 2); // pretty print
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = method.title + " by " + method.creator + ".json"; // filename
-    link.click();
-
-    URL.revokeObjectURL(url);
-
-    toast.success("Success export", {
-      description: "Success to export your method, check it on your folder"
-    })
-  };
 
   const isValidBrewMethod = (data: unknown): data is BrewMethod => {
     if (typeof data !== "object" || data === null) return false;
@@ -156,14 +139,31 @@ export default function CustomePage() {
     );
   };
 
+  const handleExport = () => {
+    const json = JSON.stringify(method, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = method.title + " by " + method.creator + ".json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+
+    toast.success("Success export", {
+      description: "Success to export your method, check it on your folder",
+    });
+  };
+
   const handleResetUpload = () => {
     if (isUploaded) {
       setMethod(defaultMethod);
       setIsUploaded(false);
 
       toast.info("Method reset", {
-        description: "Brew method has been reset to default"
-      })
+        description: "Brew method has been reset to default",
+      });
     }
   };
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,18 +181,18 @@ export default function CustomePage() {
           setIsUploaded(true);
 
           toast.success("Success import", {
-            description: "Your brew method is valid, and success to import"
-          })
+            description: "Your brew method is valid, and success to import",
+          });
         } else {
           toast.error("Failed to import", {
-            description: "Your brew method is invalid"
-          })
+            description: "Your brew method is invalid",
+          });
           throw new Error("Invalid BrewMethod structure");
         }
       } catch (err) {
         toast.error("Failed to import", {
-          description: "Your brew method is invalid"
-        })
+          description: "Your brew method is invalid",
+        });
         console.error(err);
         alert("Invalid BrewMethod JSON file");
       }
@@ -200,8 +200,6 @@ export default function CustomePage() {
 
     reader.readAsText(file);
   };
-
-  const [useNumberInput, setUseNumberInput] = useState(false);
 
   const updateMethodField = <K extends keyof BrewMethod>(
     key: K,
@@ -589,13 +587,13 @@ export default function CustomePage() {
             </div>
 
             <div className="grid w-full items-center sm:col-span-2 gap-2 my-2">
-              <label
-                className="font-semibold text-sm text-stone-700 dark:text-stone-400"
-              >
+              <label className="font-semibold text-sm text-stone-700 dark:text-stone-400">
                 Tags
               </label>
-              <MultiValueInput value={method.tags} onChange={(e) =>
-                    updateMethodField("tags", e)} />
+              <MultiValueInput
+                value={method.tags}
+                onChange={(e) => updateMethodField("tags", e)}
+              />
             </div>
           </div>
         </section>
@@ -794,7 +792,7 @@ export default function CustomePage() {
                         }%`,
                       }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-stone-700 dark:text-stone-500">
+                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-stone-700 dark:text-stone-200">
                       {formatTime(schedule.time)} -{" "}
                       {formatTime(schedule.endTime)}
                     </div>

@@ -130,7 +130,7 @@ export default function PourSection({
           <div
             className={`flex mt-2 pb-2 pt-6 sm:py-4 sm:mb-2 justify-center items-center sm:w-32 sm:rounded-2xl ${
               dockMode
-                ? "border-t-2 border-dashed sm:border-none px-20 w-full bg-stone-200 dark:bg-stone-900 sm:bg-stone-200/40 sm:dark:bg-stone-900/40"
+                ? "border-t-2 border-dashed sm:border-none px-20 w-full bg-stone-200 dark:bg-stone-900 sm:bg-stone-200/90 sm:dark:bg-stone-900/90"
                 : ""
             }`}
           >
@@ -141,7 +141,7 @@ export default function PourSection({
           </div>
           <div
             className={`flex justify-center items-center space-x-3 sm:w-auto p-4 pb-12 sm:pb-4 sm:mb-6 sm:mt-2 mb-0  rounded-2xl ${
-              dockMode ? "w-full bg-stone-200 dark:bg-stone-900 sm:bg-stone-200/40 sm:dark:bg-stone-900/40" : ""
+              dockMode ? "w-full bg-stone-200 dark:bg-stone-900 sm:bg-stone-200/90 sm:dark:bg-stone-900/90" : ""
             }`}
           >
             <Button
@@ -156,7 +156,7 @@ export default function PourSection({
               variant={"outline"}
               onClick={handleStop}
               disabled={!isRunning}
-              className="h-[52px] w-[52px] bg-red-700 darK:bg-red-800/55 text-white hover:text-stone-100 rounded-md hover:bg-red-600 disabled:bg-stone-600 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
+              className="h-[52px] w-[52px] bg-red-700 dark:bg-red-800 text-white hover:text-stone-100 rounded-md hover:bg-red-600 disabled:bg-stone-600 dark:disabled:bg-stone-900 disabled:cursor-not-allowed transition-colors"
             >
               <Pause />
             </Button>
