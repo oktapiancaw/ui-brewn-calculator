@@ -10,12 +10,12 @@ type MenuLinkProps = {
 export default function MenuLink({ title, creator, tags, url }: MenuLinkProps) {
   return (
     <Link
-      className="relative h-full w-full bg-white p-4 border dark:bg-stone-950 overflow-hidden rounded-2xl"
+      className="relative h-full w-full bg-white shadow-sm p-4 border dark:bg-stone-950 overflow-hidden rounded-2xl hover:bg-stone-50 dark:hover:bg-stone-900 duration-500"
       href={url}
     >
       <div className="flex flex-col justify-left">
-        <div className="flex  justify-between items-center space-x-4 flex-col sm:flex-row">
-          <h4 className="font-bold dark:text-stone-100 text-lg md:text-">
+        <div className="flex  justify-between items-center flex-col sm:flex-row">
+          <h4 className="font-bold dark:text-stone-100 text-lg sm:text- text-center sm:text-left">
             {title}
           </h4>
           <p className="space-x-2 text-center sm:text-left">

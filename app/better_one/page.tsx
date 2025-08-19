@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
+  Divide,
   Droplets,
   Grip,
   Info,
@@ -132,7 +133,7 @@ export default function BetterOneMethod() {
     {
       title: "Pouring",
       Icon: Droplets,
-      notes: (1+ latterPours).toString() + " Pours",
+      notes: (1 + latterPours).toString() + " Pours",
     },
   ];
 
@@ -140,8 +141,12 @@ export default function BetterOneMethod() {
     <>
       <div className="mb-8">
         <Link href={"/"}>
-          <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Button
+            variant={"outline"}
+            className="h-[44px] md:w-[44px] w-full flex items-center justify-center"
+          >
             <ArrowLeft />
+            <span className="inline md:hidden">Back to home</span>
           </Button>
         </Link>
       </div>
@@ -195,15 +200,13 @@ export default function BetterOneMethod() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline">
-                      <Info></Info>
-                      Ratio
+                      <Divide />
+                      <p className="font-bold tracking-wider text-sm ">
+                        1:16.67
+                      </p>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="font-bold tracking-wider text-base ">
-                      1:16.67
-                    </p>
-                  </TooltipContent>
+                  <TooltipContent>Coffee ratio</TooltipContent>
                 </Tooltip>
               </div>
             </div>

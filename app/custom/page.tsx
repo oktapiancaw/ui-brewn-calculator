@@ -357,8 +357,12 @@ export default function CustomePage() {
     <>
       <div className="mb-8">
         <Link href={"/"}>
-          <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Button
+            variant={"outline"}
+            className="h-[44px] md:w-[44px] w-full flex items-center justify-center"
+          >
             <ArrowLeft />
+            <span className="inline md:hidden">Back to home</span>
           </Button>
         </Link>
       </div>
@@ -555,7 +559,7 @@ export default function CustomePage() {
 
               <div className="flex justify-center items-center space-x-2">
                 <Textarea
-                  placeholder="Type your preparation."
+                  placeholder="Things to prepare before brewing coffee"
                   id="preparation"
                   className="max-h-[160px] sm:h-[40px] h-[120px]"
                   value={method.preparation}

@@ -19,6 +19,7 @@ import {
 
 import {
   ArrowLeft,
+  Divide,
   Droplets,
   Grip,
   Info,
@@ -175,8 +176,12 @@ export default function TetsuKasuyaMethod() {
     <>
       <div className="mb-8">
         <Link href={"/"}>
-          <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Button
+            variant={"outline"}
+            className="h-[44px] md:w-[44px] w-full flex items-center justify-center"
+          >
             <ArrowLeft />
+            <span className="inline md:hidden">Back to home</span>
           </Button>
         </Link>
       </div>
@@ -227,13 +232,11 @@ export default function TetsuKasuyaMethod() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline">
-                      <Info></Info>
-                      Ratio
+                      <Divide />
+                      <p className="font-bold tracking-wider text-sm ">1:15</p>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="font-bold tracking-wider text-base ">1:15</p>
-                  </TooltipContent>
+                  <TooltipContent>Coffee ratio</TooltipContent>
                 </Tooltip>
               </div>
             </div>

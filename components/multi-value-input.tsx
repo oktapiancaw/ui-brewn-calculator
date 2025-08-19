@@ -39,7 +39,7 @@ const MultiValueInput: React.FC<MultiValueInputProps> = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 border border-input rounded-md focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]  px-3 py-2 text-base shadow-xs transition-[color,box-shadow] focus-within:border-stone-500 md:text-sm">
+    <div className="flex flex-wrap items-center gap-2 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 border border-input rounded-md focus-within:ring-ring/50 focus-within:ring-[3px]  px-3 py-2 text-base shadow-xs transition-[color,box-shadow] focus-within:border-stone-500 md:text-sm">
       {values.map((val, index) => (
         <span
           key={index}

@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
+  Divide,
   Droplets,
   Grip,
   Info,
@@ -42,7 +43,7 @@ export default function SimpleOne() {
       time: 0,
       endTime: 45,
       volume: eachLatterVol,
-      label: "bloom",
+      label: "Bloom",
     });
     let bodyTime = 45;
 
@@ -87,41 +88,49 @@ export default function SimpleOne() {
   const BrewMethod = {
     title: "Simple Brew",
     creator: "AI",
-    tags: ["filter", "v60"]
-  }
+    tags: ["filter", "v60"],
+  };
   const summaryCard = [
     {
       title: "Total Water",
       Icon: Waves,
-      notes: totalWater.toFixed(1).toString() + " ml"
+      notes: totalWater.toFixed(1).toString() + " ml",
     },
     {
       title: "Temperature",
       Icon: Thermometer,
-      notes: "90°C"
+      notes: "90°C",
     },
     {
       title: "Grind Size",
       Icon: Grip,
-      notes: "Medium coarse"
+      notes: "Medium coarse",
     },
     {
       title: "Pouring",
       Icon: Droplets,
-      notes: latterPours.toString() + " Pours"
+      notes: latterPours.toString() + " Pours",
     },
-  ]
+  ];
 
   return (
     <>
       <div className="mb-8">
         <Link href={"/"}>
-          <Button variant={"outline"} className="h-[44px] md:w-[44px] w-full">
+          <Button
+            variant={"outline"}
+            className="h-[44px] md:w-[44px] w-full flex items-center justify-center"
+          >
             <ArrowLeft />
+            <span className="inline md:hidden">Back to home</span>
           </Button>
         </Link>
       </div>
-      <MethodHeader title={BrewMethod.title} creator={BrewMethod.creator} tags={BrewMethod.tags}/>
+      <MethodHeader
+        title={BrewMethod.title}
+        creator={BrewMethod.creator}
+        tags={BrewMethod.tags}
+      />
       <main className="space-y-12 max-w-3xl mx-auto p-4">
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <Alert variant="default">
@@ -164,13 +173,11 @@ export default function SimpleOne() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline">
-                      <Info></Info>
-                      Ratio
+                      <Divide />
+                      <p className="font-bold tracking-wider text-sm ">1:15</p>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="font-bold tracking-wider text-base ">1:15</p>
-                  </TooltipContent>
+                  <TooltipContent>Coffee ratio</TooltipContent>
                 </Tooltip>
               </div>
             </div>
@@ -182,11 +189,14 @@ export default function SimpleOne() {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-            {
-              summaryCard.map((summary, index) => (
-                <SummaryCard key={index} title={summary.title} Icon={summary.Icon} notes={summary.notes} />
-              ))
-            }
+            {summaryCard.map((summary, index) => (
+              <SummaryCard
+                key={index}
+                title={summary.title}
+                Icon={summary.Icon}
+                notes={summary.notes}
+              />
+            ))}
           </div>
         </section>
         <PourSection

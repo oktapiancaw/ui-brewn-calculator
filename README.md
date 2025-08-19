@@ -3,9 +3,6 @@
 
 **Personal Coffee Brew Calculator & Catalogs**
 
-BREWn is a minimal yet powerful web application designed to help you:
-- Calculate manual brew parameters based on Popular Method
-- Explore different methods such as V60, AeroPress, Trubru, and more
 
 Built with [Next.js 15](https://nextjs.org/), [TailwindCSS 4](https://tailwindcss.com/), and Radix UI components for maximum performance and accessibility.
 
@@ -106,14 +103,3 @@ npm start
 ## 📄 License
 
 MIT License © 2025 Oktapian
-
-```
-
----
-
-Let me know if you'd like:
-- A logo/banner
-- Deploy instructions (e.g. Vercel, Fly.io)
-- Badges (build status, license, etc.)
-- `.env.example` if you later add environment variables
-```
