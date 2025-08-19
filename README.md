@@ -111,4 +111,4 @@ docker run -p 3000:3000 ui-brewn-calculator
 
 ## 📄 License
 
-MIT License © 2025 Oktapian
+This project is licensed under the [MIT License © 2025 Oktapian](LICENSE).

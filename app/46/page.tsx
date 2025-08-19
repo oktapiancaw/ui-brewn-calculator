@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Oktapian Candra Adi Wijaya
+// Licensed under the MIT License. See LICENSE file for details.
+
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
