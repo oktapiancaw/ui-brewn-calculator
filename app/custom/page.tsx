@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file for details.
 
 "use client";
+import LZString from "lz-string";
 import React, { useEffect, useState, useMemo } from "react";
 import MethodHeader from "@/components/method-header";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import {
   ArrowDownToLine,
   ArrowLeft,
   CircleCheck,
+  Copy,
   Divide,
   Droplets,
   Eye,
@@ -43,6 +45,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import MultiValueInput from "@/components/multi-value-input";
+import { useSearchParams } from "next/navigation";
 
 interface PourStep {
   id: number;
@@ -108,6 +111,7 @@ const defaultMethod = {
 
 
 export default function CustomePage() {
+  const searchParams = useSearchParams();
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
@@ -115,6 +119,31 @@ export default function CustomePage() {
   const [isHidden, setIsHidden] = useState(false);
   const [useNumberInput, setUseNumberInput] = useState(true);
   const [method, setMethod] = useState<BrewMethod>(defaultMethod);
+  const [isCopied, setIsCopied] = useState<boolean>(false)
+  useEffect(() => {
+    const compressed = searchParams.get("d");
+    if (compressed) {
+      try {
+        const jsonStr = LZString.decompressFromEncodedURIComponent(compressed);
+        if (jsonStr) {
+          const parsed = JSON.parse(jsonStr);
+          setMethod(parsed);
+        }
+      } catch (err) {
+        console.error("Failed to decompress", err);
+      }
+    }
+  }, [searchParams]);
+
+  const handleCopy = () => {
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(method));
+    const shortUrl = `${window.location.protocol}//${window.location.host}/custom?d=${compressed}`
+    navigator.clipboard.writeText(shortUrl)
+    setIsCopied(true)
+
+    setTimeout(() => setIsCopied(false), 3000);
+  };
+
 
   const isValidBrewMethod = (data: unknown): data is BrewMethod => {
     if (typeof data !== "object" || data === null) return false;
@@ -265,6 +294,8 @@ export default function CustomePage() {
       })
     );
   };
+
+
 
   const totalCycleDuration = useMemo(() => {
     if (!method) return 0;
@@ -695,7 +726,7 @@ export default function CustomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Start Second */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-stone-700">
+                    <label htmlFor={'startSecond'+index} className="block text-sm font-medium text-stone-700">
                       Start Second
                     </label>
                     {useNumberInput ? (
@@ -703,6 +734,7 @@ export default function CustomePage() {
                         <Input
                           disabled={isHidden}
                           type="number"
+                          id={'startSecond'+index}
                           value={schedule.time}
                           onChange={(e) =>
                             updateSchedule(
@@ -743,7 +775,7 @@ export default function CustomePage() {
 
                   {/* End Second */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-stone-700">
+                    <label htmlFor={'endSecond'+index}  className="block text-sm font-medium text-stone-700">
                       End Second
                     </label>
                     {useNumberInput ? (
@@ -751,6 +783,7 @@ export default function CustomePage() {
                         <Input
                           disabled={isHidden}
                           type="number"
+                          id={'endSecond'+index}
                           value={schedule.endTime}
                           onChange={(e) =>
                             updateSchedule(
@@ -812,7 +845,7 @@ export default function CustomePage() {
                 <div className="mt-4">
                   <label
                     className="font-semibold text-sm text-stone-700 dark:text-stone-400"
-                    htmlFor="coffeeGram"
+                    htmlFor={"waterMl"+index}
                   >
                     Water (ml)
                   </label>
@@ -820,7 +853,7 @@ export default function CustomePage() {
                   <div className="flex justify-center items-center space-x-2">
                     <Input
                       disabled={isHidden}
-                      id="coffeeGram"
+                      id={"waterMl"+index}
                       type="number"
                       value={schedule.volume}
                       onChange={(e) =>
@@ -868,6 +901,29 @@ export default function CustomePage() {
           </div>
         </section>
 
+        <div className="flex flex-col items-center w-full space-y-2">
+
+          <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
+            Copy & Share
+          </p>
+          <div className="flex justify-center items-center space-x-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="h-[40px] w-full"
+                  onClick={() => handleCopy()}
+                >
+                  Copy the link<Copy />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-bold ">Copy to clipboard</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <span className={`text-xs ${isCopied ? 'text-foreground': 'text-background'} transition-all  duration-300`}>Link copied!</span>
+        </div>
         <section className="opacity: 1; filter: blur(0px); transform: none;">
           <p className="font-semibold text-center text-md mb-4 text-stone-400 dark:text-stone-600">
             Summary
@@ -910,6 +966,7 @@ export default function CustomePage() {
             </AlertDescription>
           </Alert>
         </section>
+        
         <PourSection
           pourSchedule={method.schedules}
           seconds={seconds}
