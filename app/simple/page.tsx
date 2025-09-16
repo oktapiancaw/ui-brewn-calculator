@@ -90,8 +90,8 @@ export default function SimpleOne() {
 
   const BrewMethod = {
     title: "Simple Brew",
-    creator: "AI",
-    tags: ["filter", "v60"],
+    creator: "Oktapian",
+    tags: ["filter", "pour-over", "v60"],
   };
   const summaryCard = [
     {

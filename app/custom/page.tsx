@@ -71,6 +71,8 @@ const defaultMethod = {
   coffeeGram: 14,
   grindSize: "fine",
   roastLevel: "medium",
+  preparation: "- Boil the water\n- Rinse the paper filter",
+  keyNotes: "Tested on Kamojang Natural beans, and it smooth",
   waterTemp: 90,
   schedules: [
     {
@@ -103,6 +105,7 @@ const defaultMethod = {
     },
   ],
 };
+
 
 export default function CustomePage() {
   const [seconds, setSeconds] = useState(0);
@@ -548,6 +551,7 @@ export default function CustomePage() {
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="medium-dark">Medium Dark</SelectItem>
                     <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="omni">Omni</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

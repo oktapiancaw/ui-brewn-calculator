@@ -10,10 +10,6 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-// const geist = Geist({
-//   variable: "--font-geist",
-//   subsets: ["latin"],
-// });
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],

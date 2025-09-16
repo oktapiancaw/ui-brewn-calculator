@@ -113,9 +113,9 @@ export default function BetterOneMethod() {
     };
   }, [isRunning, seconds, totalDuration]);
   const BrewMethod = {
-    title: "The Better One Cup",
+    title: "A Better One Cup",
     creator: "James Hoffman",
-    tags: ["filter", "v60"],
+    tags: ["filter", "pour-over", "v60"],
   };
   const summaryCard = [
     {

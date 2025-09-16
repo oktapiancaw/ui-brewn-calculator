@@ -5,32 +5,31 @@ const MENU_LIST = [
   {
     id: 1,
     title: "Simpel Brew",
-    creator: "AI",
-    tags: ["filter", "v60"],
+    creator: "Oktapian",
+    tags: ["filter", "pour-over", "v60"],
     url: "/simple",
   },
   {
     id: 2,
     title: "A Better One Cup",
     creator: "James Hoffman",
-    tags: ["filter", "v60"],
+    tags: ["filter", "pour-over", "v60"],
     url: "/better_one",
   },
   {
     id: 3,
     title: "4:6 Method",
     creator: "Tetsu Kasuya",
-    tags: ["filter", "v60", "champ"],
+    tags: ["filter", "pour-over", "v60", "champ"],
     url: "/46",
   },
-
-  // {
-  //   id: 1,
-  //   title: "Make Your Own",
-  //   creator: "Yourself",
-  //   tags: ["filter", "v60"],
-  //   url: "/custom",
-  // },
+  {
+    id: 4,
+    title: "Cold Brew Method",
+    creator: "Oktapian",
+    tags: ["filter", "cold-brew"],
+    url: "/cold-brew",
+  },
 ];
 
 export default function Home() {
@@ -42,7 +41,7 @@ export default function Home() {
             Manual Brew Methods
           </p>
           <p className="text-stone-600 dark:text-stone-300">
-            <span>by Someone I respect</span>
+            <span>Recipe & Calculator</span>
           </p>
         </div>
       </header>
