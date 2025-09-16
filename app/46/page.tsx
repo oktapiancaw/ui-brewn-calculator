@@ -150,7 +150,7 @@ export default function TetsuKasuyaMethod() {
   const BrewMethod = {
     title: "4:6 Method",
     creator: "Tetsu Kasuya",
-    tags: ["filter", "v60", "champ"],
+    tags: ["filter", "pour-over", "v60", "champ"],
   };
   const summaryCard = [
     {
@@ -196,7 +196,7 @@ export default function TetsuKasuyaMethod() {
       <section className="opacity: 1; filter: blur(0px); transform: none;">
         <Alert variant="default">
           <Info className="h-full" />
-          <AlertTitle>Perparations</AlertTitle>
+          <AlertTitle>Preparations</AlertTitle>
           <AlertDescription>
             Things that need to be prepared
             <ul className="list-disc">
