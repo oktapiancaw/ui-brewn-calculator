@@ -111,6 +111,7 @@ const defaultMethod = {
 
 
 export default function CustomePage() {
+
   const searchParams = useSearchParams();
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -121,16 +122,31 @@ export default function CustomePage() {
   const [method, setMethod] = useState<BrewMethod>(defaultMethod);
   const [isCopied, setIsCopied] = useState<boolean>(false)
   useEffect(() => {
-    const compressed = searchParams.get("d");
+    const compressed = searchParams.get('d')
     if (compressed) {
       try {
         const jsonStr = LZString.decompressFromEncodedURIComponent(compressed);
-        if (jsonStr) {
-          const parsed = JSON.parse(jsonStr);
+        const parsed = JSON.parse(jsonStr);
+
+        if (isValidBrewMethod(parsed)) {
           setMethod(parsed);
+          setIsUploaded(true);
+
+          toast.success("Success load", {
+            description: "Your brew method is valid, and success to load",
+          });
+        } else {
+          toast.error("Failed to load", {
+            description: "Your brew method is invalid",
+          });
+          throw new Error("Invalid BrewMethod structure");
         }
       } catch (err) {
-        console.error("Failed to decompress", err);
+        toast.error("Failed to load", {
+          description: "Your brew method is invalid",
+        });
+        console.error(err);
+        alert("Invalid BrewMethod JSON file");
       }
     }
   }, [searchParams]);
