@@ -82,7 +82,7 @@ export default function Home() {
             &quot;There is no such thing as bad brewed coffee, there is only
             good coffee and really good coffee.&quot;
             <br />
-            <br />- Arga P (Barista at Evlogia Cafe)
+            <br />- Someone I respect
           </blockquote>
         </section>
       </main>
